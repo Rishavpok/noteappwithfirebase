@@ -112,6 +112,7 @@ const { value : isCompleted , errorMessage : isCompletedError  } = useField('isC
 const { value : category, errorMessage : categoryError } = useField('category')
 
 const onSubmit = handleSubmit(async (values) => {
+  const currentUserId = localStorage.getItem("user_uid");
   const id = route.params.id as string;
   isLoading.value = true;
   error.value = "";
@@ -126,6 +127,7 @@ const onSubmit = handleSubmit(async (values) => {
         isCompleted: values.isCompleted,
         category: values.category || "#ffb703",
         updatedAt: Date.now(),
+        userId: currentUserId
       });
       toast.success("Note updated successfully!");
     } else {
@@ -137,6 +139,7 @@ const onSubmit = handleSubmit(async (values) => {
         category: values.category || "#ffb703",
         createdAt: Date.now(),
         updatedAt: Date.now(),
+        userId: currentUserId
       });
       toast.success("Note created successfully!");
       resetForm();

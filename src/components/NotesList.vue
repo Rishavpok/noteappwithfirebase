@@ -41,7 +41,7 @@
 
  // imports
  import {onMounted, ref, watch, watchEffect} from "vue";
- import {collection, deleteDoc, getDocs, doc} from "firebase/firestore";
+ import { collection, deleteDoc, getDocs, doc, query, where } from "firebase/firestore";
  import { db } from "@/services/firebase";
  import {useRouter} from "vue-router";
  import {useToast} from "vue-toastification";
@@ -96,19 +96,30 @@
 
  async function getNotes() {
    isLoading.value = true;
+   const userId = localStorage.getItem("user_uid");
+   console.log(userId);
    try {
-     const snap = await getDocs(collection(db, "notes"));
+
+     const notesQuery = query(
+         collection(db, "notes"),
+         where("userId", "==", userId)  // <-- filter by current user
+     );
+
+     const snap = await getDocs(notesQuery);
+     console.log("Firestore docs:", snap.docs.map(doc => doc.data()));
      notes.value = snap.docs.map(doc => ({
        id: doc.id,
        ...doc.data()
      }));
+
+     console.log(notes.value)
 
      allNotes.value = notes.value
 
    } catch (err) {
      error.value = err.message;
    } finally {
-     loading.value = false;
+     isLoading.value = false;
    }
  }
 
