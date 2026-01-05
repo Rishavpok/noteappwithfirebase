@@ -27,6 +27,9 @@
       </div>
 
       <button type="submit" class="submit-btn">Login</button>
+
+      <span class="error" > {{ error }}  </span>
+
     </form>
 
     <div class="login-link">
@@ -76,7 +79,7 @@ const onSubmit = handleSubmit( async ( values ) => {
 
   } catch (e) {
     const err = e as Error;
-    error.value = err.message || "Failed to register";
+    error.value = err.message || "Failed to login";
   } finally {
     isLoading.value = false;
   }
