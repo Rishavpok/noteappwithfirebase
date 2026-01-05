@@ -41,7 +41,7 @@
 
 
        <div class="action-row">
-         <button @click="resetForm" type="button" class="btn btn-cancel">Cancel</button>
+         <button  @click="() => resetForm()" type="button" class="btn btn-cancel">Cancel</button>
          <button v-if="!editMode" type="submit" class="btn btn-submit" :disabled="isLoading" >
            {{ isLoading ? "Saving..." : "Save Note" }}
          </button>
@@ -78,6 +78,13 @@ const editMode = ref(false)
 const route = useRoute()
 const note = ref<any>(null)
 
+type NoteForm = {
+  title: string;
+  description: string;
+  category: string;
+  isCompleted: boolean;
+};
+
 
 watch(note, (newNote) => {
   if(newNote){
@@ -98,7 +105,7 @@ watch(note, (newNote) => {
    category: yup.string()
  })
 
-const { handleSubmit ,setValues } = useForm({
+const { handleSubmit ,setValues } = useForm<NoteForm>({
   validationSchema: schema,
   initialValues: {
     isCompleted: false,
@@ -106,10 +113,10 @@ const { handleSubmit ,setValues } = useForm({
   }
 })
 
-const { value : title , errorMessage : titleError  } = useField('title')
-const { value : description , errorMessage : descriptionError  } = useField('description')
-const { value : isCompleted , errorMessage : isCompletedError  } = useField('isCompleted')
-const { value : category, errorMessage : categoryError } = useField('category')
+const { value : title , errorMessage : titleError  } = useField<string>('title')
+const { value : description , errorMessage : descriptionError  } = useField<string>('description')
+const { value : isCompleted , errorMessage : isCompletedError  } = useField<boolean>('isCompleted')
+const { value : category, errorMessage : categoryError } = useField<string>('category')
 
 const onSubmit = handleSubmit(async (values) => {
   const currentUserId = localStorage.getItem("user_uid");
@@ -148,7 +155,8 @@ const onSubmit = handleSubmit(async (values) => {
     // 🔹 Navigate back to list
     await router.push("/list");
   } catch (e: any) {
-    error.value = e.message || "Something went wrong";
+    const err = e as Error;
+    error.value = err.message || "Failed to fetch note";
   } finally {
     isLoading.value = false;
   }
@@ -178,10 +186,12 @@ onMounted( async () => {
       if (docSnap.exists()) {
         note.value = docSnap.data();
       } else {
-        error.value = "Note not found";
+        // const err = e as Error;
+        // error.value = err.message || "Failed to fetch note";
       }
     } catch (e) {
-      error.value = e.message || "Failed to fetch note";
+      const err = e as Error;
+      error.value = err.message || "Failed to fetch note";
     } finally {
       isLoading.value = false;
     }

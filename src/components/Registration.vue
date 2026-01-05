@@ -72,8 +72,8 @@ const onSubmit = handleSubmit( async ( values ) => {
   try {
     const  userCredentials = await createUserWithEmailAndPassword(
         auth,
-        email.value,
-        password.value,
+        email.value as string,
+        password.value as string,
     )
 
     const user = userCredentials.user;
@@ -83,7 +83,8 @@ const onSubmit = handleSubmit( async ( values ) => {
     router.push("/list");
 
   } catch (e) {
-    error.value = e.message || "Failed to register";
+    const err = e as Error;
+    error.value = err.message || "Failed to register";
   } finally {
     isLoading.value = false;
   }
