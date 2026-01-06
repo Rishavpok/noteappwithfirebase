@@ -2,11 +2,15 @@
 import { useRouter } from 'vue-router';
 import {onMounted, ref} from 'vue';
 import { useToast } from 'vue-toastification';
+import {useAuth} from "@/stores/auth.ts";
+import {storeToRefs} from "pinia";
 
 const router = useRouter();
 const toast = useToast();
 const isLoggingOut = ref(false);
-const isLoggedIn = ref(false);
+const authStore = useAuth();
+
+const { isLoggedIn } = storeToRefs(authStore)
 
 const logout = () => {
   isLoggingOut.value = true;
@@ -16,12 +20,6 @@ const logout = () => {
   router.push('/login');
   isLoggingOut.value = false;
 };
-
-onMounted(() => {
-   if(localStorage.getItem("auth_token")) {
-     isLoggedIn.value = true;
-   }
-})
 
 </script>
 

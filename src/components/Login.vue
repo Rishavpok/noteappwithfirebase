@@ -45,10 +45,12 @@ import * as yup from "yup";
 import {useField, useForm} from "vee-validate";
 import { auth } from "@/services/firebase";
 import {signInWithEmailAndPassword} from "firebase/auth";
+import {useAuth} from "@/stores/auth.ts";
 
 const router = useRouter();
 const error = ref<any>("");
 const isLoading = ref(false);
+const authStore = useAuth();
 
 // form setup and form validation
 
@@ -74,6 +76,7 @@ const onSubmit = handleSubmit( async ( values ) => {
     const user = userCredentials.user;
     localStorage.setItem("auth_token", await user.getIdToken());
     localStorage.setItem("user_uid", user.uid);
+    authStore.setToken(await user.getIdToken())
 
     router.push("/list");
 
